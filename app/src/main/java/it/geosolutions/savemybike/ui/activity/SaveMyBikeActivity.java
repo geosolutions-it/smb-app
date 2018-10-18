@@ -71,6 +71,7 @@ import it.geosolutions.savemybike.ui.fragment.UserFragment;
 import it.geosolutions.savemybike.ui.fragment.prizes.PrizesFragment;
 import it.geosolutions.savemybike.ui.tasks.CleanUploadedSessionsTask;
 import it.geosolutions.savemybike.ui.tasks.GetRemoteConfigTask;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -279,6 +280,7 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                 UserInfo user = response.body();
                 Configuration.saveUserProfile(getBaseContext(), user );
                 setupUserView(user);
+                updateDevice();
             }
 
             @Override
@@ -286,6 +288,36 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                 Log.e(TAG, "Can not retrieve user profile", t);
             }
         });
+    }
+
+    /**
+     * Sends firebase ID to the server
+     */
+    public void updateDevice() {
+        RetrofitClient client = RetrofitClient.getInstance(getBaseContext());
+        SMBRemoteServices portalServices = client.getPortalServices();
+        String token = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FIREBASE_INSTANCE_ID, null);
+        String lastStoredToken = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FIREBASE_LAST_SAVED_ID, null);
+        Context ctx = this;
+        if(lastStoredToken != token && token != null) {
+            portalServices.updateDevice(token).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.code() == 200) {
+                        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(Constants.FIREBASE_LAST_SAVED_ID, token);
+                        Log.e(TAG, "Device Registered");
+                    } else {
+                        Log.e(TAG, "Can not update firebase token for this Device. service responded with code" + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e(TAG, "Can not update firebase token for this Device", t);
+                }
+            });
+        }
+
     }
 
     void setupUserView(User user) {

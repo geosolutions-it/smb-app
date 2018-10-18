@@ -15,6 +15,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
@@ -50,7 +51,7 @@ public interface SMBRemoteServices {
     @GET("api/my-tracks/?format=json")
     Call<PaginatedResult<TrackItem>> getTracks();
 
-    @GET("api/my-tracks/{id}?format=json")
+    @GET("api/my-tracks/c?format=json")
     Call <Track> getTrack(@Path("id") long id);
 
     @GET("api/my-user")
@@ -67,4 +68,11 @@ public interface SMBRemoteServices {
 
     @GET("api/my-competitions-won/")
     Call<PaginatedResult<Competition>> getMyPrizes();
+
+    @PATCH("api/my-devices/{token}")
+    Call<ResponseBody> updateDevice(@Path("token") String token);
+
+    @DELETE("apu/my-devices/{token}")
+    Call<ResponseBody> deleteDevice(@Path("token") String token);
+
 }

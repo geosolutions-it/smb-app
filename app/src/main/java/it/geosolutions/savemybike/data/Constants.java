@@ -38,6 +38,8 @@ public class Constants {
     public static final String DEFAULT_SESSION_NAME = "Session";
 
     public static final String SERVICE_NAME = "it.geosolutions.savemybike.data.service.SaveMyBikeService";
+    public static final String FIREBASE_INSTANCE_ID = "it.geosolutions.savemybike.data.service.firebase.instance.id";
+    public static final String FIREBASE_LAST_SAVED_ID = "it.geosolutions.savemybike.data.service.firebase.instance.laststoredid";
 
     public static final String NOTIFICATION_UPDATE_MODE = "it.geosolutions.savemybike.intent.mode";
     public static final String NOTIFICATION_UPDATE_STOP = "it.geosolutions.savemybike.intent.stop";
