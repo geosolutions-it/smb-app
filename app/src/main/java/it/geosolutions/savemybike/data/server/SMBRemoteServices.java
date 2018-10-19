@@ -51,7 +51,7 @@ public interface SMBRemoteServices {
     @GET("api/my-tracks/?format=json")
     Call<PaginatedResult<TrackItem>> getTracks();
 
-    @GET("api/my-tracks/c?format=json")
+    @GET("api/my-tracks/{id}?format=json")
     Call <Track> getTrack(@Path("id") long id);
 
     @GET("api/my-user")
