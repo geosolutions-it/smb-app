@@ -35,14 +35,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthorizationService;
 
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -87,6 +91,7 @@ import retrofit2.Response;
 public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInteractionListener {
 
     private final static String TAG = "SaveMyBikeActivity";
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private final static int UI_UPDATE_INTERVAL = 1000;
 
@@ -121,7 +126,7 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //inflate
         setContentView(R.layout.drawer_layout);
         ButterKnife.bind(this);
@@ -282,6 +287,13 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                 Configuration.saveUserProfile(getBaseContext(), user );
                 setupUserView(user);
                 updateDevice();
+                if(user != null) {
+                    mFirebaseAnalytics.setUserId(user.getUsername());
+                    mFirebaseAnalytics.setUserProperty("email", user.getEmail());
+                    mFirebaseAnalytics.setUserProperty("last_user_update", String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())););
+                    Log.d("ANALYTICS", "user info updated:" + user.getUsername());
+
+                }
             }
 
             @Override

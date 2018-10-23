@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.AuthorizationServiceDiscovery;
@@ -30,10 +32,12 @@ import retrofit2.Response;
 
 public class CompleteProfile extends SMBBaseActivity {
     private static final String TAG = "COMPLETEPROFILE";
+    private FirebaseAnalytics mFirebaseAnalytics;
     AuthStateManager mStateManager = AuthStateManager.getInstance(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setContentView(R.layout.activity_complete_profile);
     }
 
@@ -50,6 +54,8 @@ public class CompleteProfile extends SMBBaseActivity {
         service.updateUser(user).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                mFirebaseAnalytics.setUserProperty("state", "profile_completed");
+                Log.d("ANALYTICS", "registered user as a profile completed ");
                 Intent intent = new Intent(context, SaveMyBikeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
