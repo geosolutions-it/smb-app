@@ -59,6 +59,7 @@ import it.geosolutions.savemybike.model.Configuration;
 import it.geosolutions.savemybike.model.PaginatedResult;
 import it.geosolutions.savemybike.model.Session;
 import it.geosolutions.savemybike.model.Vehicle;
+import it.geosolutions.savemybike.model.user.Device;
 import it.geosolutions.savemybike.model.user.User;
 import it.geosolutions.savemybike.model.user.UserInfo;
 import it.geosolutions.savemybike.ui.callback.IOnBackPressed;
@@ -300,10 +301,13 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
         String lastStoredToken = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FIREBASE_LAST_SAVED_ID, null);
         Context ctx = this;
         if(lastStoredToken != token && token != null) {
-            portalServices.updateDevice(token).enqueue(new Callback<ResponseBody>() {
+            Device device = new Device();
+            device.setRegistrationId(token);
+            device.setType("android");
+            portalServices.updateDevice(device).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if(response.code() == 200) {
+                    if(response.code() < 400) {
                         PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(Constants.FIREBASE_LAST_SAVED_ID, token);
                         Log.e(TAG, "Device Registered");
                     } else {
@@ -316,6 +320,8 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                     Log.e(TAG, "Can not update firebase token for this Device", t);
                 }
             });
+        } else {
+            Log.i(TAG,"Firebase token already registered:" + token);
         }
 
     }

@@ -1,5 +1,7 @@
 package it.geosolutions.savemybike;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -8,10 +10,27 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import it.geosolutions.savemybike.data.Constants;
+import java.util.Map;
 
+import it.geosolutions.savemybike.data.Constants;
+import it.geosolutions.savemybike.data.service.UserNotificationManager;
+import it.geosolutions.savemybike.ui.activity.LoginActivity;
+
+/**
+ * Manages Firebase messages
+ */
 public class FirebaseService extends FirebaseMessagingService {
     private static final String TAG = FirebaseService.class.getSimpleName();
+    public static final String MESSAGE_NAME_KEY = "message_name";
+    public static final class MESSAGE_TYPES {
+        public static final String TRACK_VALIDATED = "track_validated";
+
+    }
+    public static final class VALIDATION_KEYS {
+        public static final String IS_VALID = "is_valid";
+        public static final String VALIDATION_ERRORS = "validation_errors";
+    }
+
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -38,24 +57,38 @@ public class FirebaseService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                // scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                // handleNow();
+            remoteMessage.getData();
+            String msgName = remoteMessage.getData().get(MESSAGE_NAME_KEY);
+            switch (msgName) {
+                case MESSAGE_TYPES.TRACK_VALIDATED: {
+                    if("false".equals(remoteMessage.getData().get(VALIDATION_KEYS.IS_VALID))) {
+                        handleInvalid(remoteMessage.getData().get(VALIDATION_KEYS.VALIDATION_ERRORS));
+                    } else {
+                        handleValid();
+                    }
+                }
             }
-
+        } else {
+            // TODO: manage generic notification to the user
         }
+    }
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-        }
+    /**
+     * Handles a notification of an invalid track error
+     * @param errors
+     */
+    public void handleInvalid(String errors ) {
+        getUserNotificationManager().notifyTrackInvalid(errors);
+    }
+    /**
+     * Handles a notification of an valid track
+     */
+    public void handleValid() {
+        getUserNotificationManager().notifyTrackValid();
+    }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+    public UserNotificationManager getUserNotificationManager() {
+        return UserNotificationManager.getInstance(getBaseContext());
     }
     void storeRegistration(String token) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);

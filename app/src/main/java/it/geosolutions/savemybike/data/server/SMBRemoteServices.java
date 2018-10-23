@@ -6,9 +6,10 @@ import it.geosolutions.savemybike.model.Bike;
 import it.geosolutions.savemybike.model.Configuration;
 import it.geosolutions.savemybike.model.CurrentStatus;
 import it.geosolutions.savemybike.model.PaginatedResult;
-import it.geosolutions.savemybike.model.competition.Competition;
 import it.geosolutions.savemybike.model.Track;
 import it.geosolutions.savemybike.model.TrackItem;
+import it.geosolutions.savemybike.model.competition.Competition;
+import it.geosolutions.savemybike.model.user.Device;
 import it.geosolutions.savemybike.model.user.User;
 import it.geosolutions.savemybike.model.user.UserInfo;
 import okhttp3.RequestBody;
@@ -61,7 +62,7 @@ public interface SMBRemoteServices {
     Call<PaginatedResult<Badge>> getBadges();
 
     @PATCH("api/my-user")
-    Call<ResponseBody> updateUser(@Body  User user);
+    Call<ResponseBody> updateUser(@Body User user);
 
     @GET("api/my-competitions-current")
     Call<PaginatedResult<Competition>> getMyCompetitions();
@@ -69,10 +70,10 @@ public interface SMBRemoteServices {
     @GET("api/my-competitions-won/")
     Call<PaginatedResult<Competition>> getMyPrizes();
 
-    @PATCH("api/my-devices/{token}")
-    Call<ResponseBody> updateDevice(@Path("token") String token);
+    @POST("api/my-devices/")
+    Call<ResponseBody> updateDevice(@Body Device token);
 
-    @DELETE("apu/my-devices/{token}")
+    @DELETE("api/my-devices/{token}")
     Call<ResponseBody> deleteDevice(@Path("token") String token);
 
 }
