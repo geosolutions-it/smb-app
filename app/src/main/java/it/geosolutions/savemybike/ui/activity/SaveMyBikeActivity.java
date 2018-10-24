@@ -52,6 +52,7 @@ import butterknife.ButterKnife;
 import it.geosolutions.savemybike.BuildConfig;
 import it.geosolutions.savemybike.GlideApp;
 import it.geosolutions.savemybike.R;
+import it.geosolutions.savemybike.data.Analytics;
 import it.geosolutions.savemybike.data.Constants;
 import it.geosolutions.savemybike.data.Util;
 import it.geosolutions.savemybike.data.server.RetrofitClient;
@@ -288,8 +289,8 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                 updateDevice();
                 if(user != null) {
                     mFirebaseAnalytics.setUserId(user.getUsername());
-                    mFirebaseAnalytics.setUserProperty("email", user.getEmail());
-                    mFirebaseAnalytics.setUserProperty("last_user_update", String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())));
+                    mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.EMAIL, user.getEmail());
+                    mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.LAST_USER_UPDATE, String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())));
                     Log.d("ANALYTICS", "user info updated:" + user.getUsername());
 
                 }

@@ -20,6 +20,7 @@ import net.openid.appauth.AuthorizationServiceDiscovery;
 
 import it.geosolutions.savemybike.AuthStateManager;
 import it.geosolutions.savemybike.R;
+import it.geosolutions.savemybike.data.Analytics;
 import it.geosolutions.savemybike.data.server.AuthClient;
 import it.geosolutions.savemybike.data.server.RetrofitClient;
 import it.geosolutions.savemybike.data.server.SMBRemoteServices;
@@ -54,7 +55,7 @@ public class CompleteProfile extends SMBBaseActivity {
         service.updateUser(user).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                mFirebaseAnalytics.setUserProperty("state", "profile_completed");
+                mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.STATE, "profile_completed");
                 Log.d("ANALYTICS", "registered user as a profile completed ");
                 Intent intent = new Intent(context, SaveMyBikeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
