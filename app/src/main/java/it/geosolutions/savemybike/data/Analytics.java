@@ -20,7 +20,7 @@ public class Analytics {
     public static final class Params {
         public static final String CODE = "code";
         public static final String MESSAGE = "message";
-        public static final String ERROR_BODY = "code";
+        public static final String ERROR_BODY = "error";
     }
 
     /**
