@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.Settings.Secure;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
@@ -41,9 +42,7 @@ import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthorizationService;
 
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -290,7 +289,7 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                 if(user != null) {
                     mFirebaseAnalytics.setUserId(user.getUsername());
                     mFirebaseAnalytics.setUserProperty("email", user.getEmail());
-                    mFirebaseAnalytics.setUserProperty("last_user_update", String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())););
+                    mFirebaseAnalytics.setUserProperty("last_user_update", String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())));
                     Log.d("ANALYTICS", "user info updated:" + user.getUsername());
 
                 }
@@ -314,6 +313,8 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
         Context ctx = this;
         if(lastStoredToken != token && token != null) {
             Device device = new Device();
+            String androidId = Secure.getString(ctx.getContentResolver(),Secure.ANDROID_ID);
+            device.setDeviceId(androidId);
             device.setRegistrationId(token);
             device.setType("android");
             portalServices.updateDevice(device).enqueue(new Callback<ResponseBody>() {

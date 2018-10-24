@@ -136,7 +136,7 @@ public class SaveMyBikeService extends Service {
 
 
 
-        startForeground(1,  getNotificationManager().startNotification(getResources().getString(R.string.state_started), vehicle));
+        startForeground(NotificationManager.NOTIFICATION_ID,  getNotificationManager().startNotification(getResources().getString(R.string.state_started), vehicle));
         return START_STICKY;
     }
 

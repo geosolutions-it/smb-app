@@ -9,6 +9,7 @@ public class Device {
     Integer id;
     String name;
     @SerializedName("registration_id") String registrationId;
+    @SerializedName("device_id") String deviceId;
     String type;
     Boolean active;
     @SerializedName("date_created") String dateCreated;
@@ -35,6 +36,14 @@ public class Device {
 
     public void setRegistrationId(String registrationId) {
         this.registrationId = registrationId;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getType() {
