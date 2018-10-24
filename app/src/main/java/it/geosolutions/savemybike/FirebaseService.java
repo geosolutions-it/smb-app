@@ -24,11 +24,18 @@ public class FirebaseService extends FirebaseMessagingService {
     public static final String MESSAGE_NAME_KEY = "message_name";
     public static final class MESSAGE_TYPES {
         public static final String TRACK_VALIDATED = "track_validated";
+        public static final String BADGE_WON = "badge_won";
+        public static final String PRIZE_WON = "prize_won";
+
 
     }
     public static final class VALIDATION_KEYS {
         public static final String IS_VALID = "is_valid";
         public static final String VALIDATION_ERRORS = "validation_errors";
+    }
+    public static final class NOTIFICATION_KEYS {
+        public static final String BADGE_NAME = "badge_name";
+        public static final String PRIZE_NAME = "prize_name";
     }
 
 
@@ -67,6 +74,12 @@ public class FirebaseService extends FirebaseMessagingService {
                         handleValid();
                     }
                 }
+                case MESSAGE_TYPES.BADGE_WON: {
+                    handleBadgeWon(remoteMessage.getData().get(NOTIFICATION_KEYS.BADGE_NAME));
+                }
+                case MESSAGE_TYPES.PRIZE_WON: {
+                    handlePrizeWon(remoteMessage.getData().get(NOTIFICATION_KEYS.PRIZE_NAME));
+                }
             }
         } else {
             // TODO: manage generic notification to the user
@@ -87,6 +100,12 @@ public class FirebaseService extends FirebaseMessagingService {
         getUserNotificationManager().notifyTrackValid();
     }
 
+    public void handleBadgeWon(String badgeName) {
+        getUserNotificationManager().handleBadgeWon(badgeName);
+    }
+    public void handlePrizeWon(String prizeName) {
+        getUserNotificationManager().handlePrizeWon(prizeName);
+    }
     public UserNotificationManager getUserNotificationManager() {
         return UserNotificationManager.getInstance(getBaseContext());
     }

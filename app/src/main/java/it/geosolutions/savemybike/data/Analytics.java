@@ -12,7 +12,6 @@ public class Analytics {
     public static final class UserProperties {
         public static final String EMAIL = "email";
         public static final String LAST_USER_UPDATE = "last_user_update";
-        public static final String REGISTRATION_ID = "registration_id";
         public static final String STATE = "state";
     }
     public static final class Events {

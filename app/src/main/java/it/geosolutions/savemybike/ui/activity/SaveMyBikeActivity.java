@@ -283,17 +283,23 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 
             @Override
             public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
-                UserInfo user = response.body();
-                Configuration.saveUserProfile(getBaseContext(), user );
-                setupUserView(user);
-                updateDevice();
-                if(user != null) {
-                    mFirebaseAnalytics.setUserId(user.getUsername());
-                    mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.EMAIL, user.getEmail());
-                    mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.LAST_USER_UPDATE, String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())));
-                    Log.d("ANALYTICS", "user info updated:" + user.getUsername());
+                if(response.code() < 400) {
+                    UserInfo user = response.body();
+                    Configuration.saveUserProfile(getBaseContext(), user );
+                    setupUserView(user);
+                    updateDevice();
+                    if(user != null) {
+                        mFirebaseAnalytics.setUserId(user.getUsername());
+                        mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.EMAIL, user.getEmail());
+                        mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.LAST_USER_UPDATE, String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())));
+                        Log.d("ANALYTICS", "user info updated:" + user.getUsername());
 
+                    }
+                } else {
+                    mFirebaseAnalytics.logEvent(Analytics.Events.UPDATE_ERROR, Analytics.createEventBundle(response));
+                    Log.e(TAG, "wrong response code with getUser:"+ response.code() );
                 }
+
             }
 
             @Override
@@ -445,7 +451,11 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
             serviceIntent.putExtra(SaveMyBikeService.PARAM_VEHICLE, currentVehicle);
             serviceIntent.putExtra(SaveMyBikeService.PARAM_CONFIG, getConfiguration());
 
-            startService(serviceIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
 
             bindToService(serviceIntent);
         }

@@ -73,6 +73,11 @@ public class Constants {
         public static final String TRACK_INVALID_ID = "it.geosolutions.savemybike.tracks_channel_invalid";
         public static final String TRACKS_INVALID_NAME = "Track validation errors";
 
+        public static final String PRIZES_WON_ID = "it.geosolutions.savemybike.prize.won";
+        public static final String PRIZES_WON_NAME = "Notification about won prizes";
+
+        public static final String BADGES_WON_ID = "it.geosolutions.savemybike.badges.won";
+        public static final String BADGES_WON_NAME = "Notification about won bades";
     }
 
 

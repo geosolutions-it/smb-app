@@ -212,9 +212,12 @@ public class SaveMyBikeService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "ondestroy! ");
 
         //if the service gets killed and we did not stop - try to persist
         if(!didStop && sessionLogic != null) {
+            Log.e(TAG, "KILLED");
+            Log.e(TAG, "STACK_TRACE:" + Thread.currentThread().getStackTrace().toString());
             sessionLogic.persistSession();
         }
 
