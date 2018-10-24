@@ -73,12 +73,15 @@ public class FirebaseService extends FirebaseMessagingService {
                     } else {
                         handleValid();
                     }
+                    break;
                 }
                 case MESSAGE_TYPES.BADGE_WON: {
                     handleBadgeWon(remoteMessage.getData().get(NOTIFICATION_KEYS.BADGE_NAME));
+                    break;
                 }
                 case MESSAGE_TYPES.PRIZE_WON: {
                     handlePrizeWon(remoteMessage.getData().get(NOTIFICATION_KEYS.PRIZE_NAME));
+                    break;
                 }
             }
         } else {
