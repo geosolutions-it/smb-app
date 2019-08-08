@@ -311,10 +311,10 @@ public class BikeDetailsActivity extends SMBBaseActivity implements OnMapReadyCa
                     geojson = new JSONObject(response.body().string());
                     Bundle args = new Bundle();
                     details.updateListData(geojson);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 } catch (JSONException e) {
                     Log.e(TAG, "Unable to read bikes positions");
+                } catch (Exception e) {
+	                e.printStackTrace();
                 }
                 if(bike != null && geojson != null) {
                     displayData();
