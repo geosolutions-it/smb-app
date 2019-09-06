@@ -244,7 +244,8 @@
     <string name="terms_of_service">Termini del Servizio</string>
     <string name="please_select">Selezionare</string>
     <string name="my_prizes">I miei premi</string>
-    <string name="up_for_grabs">Premi In Palio</string>
+    <string name="competitions_available">Disponibili</string>
+	<string name="competitions_participating">Attive</string>
     <string name="prizes">Premi</string>
     <string name="validity">Valido dal %s al %s</string>
     <string name="congratulations_you_won">Complimenti! </string>

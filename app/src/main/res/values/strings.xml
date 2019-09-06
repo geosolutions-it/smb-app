@@ -279,7 +279,8 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="please_select">Please select</string>
     <string name="my_prizes">My Prizes</string>
-    <string name="up_for_grabs">Up For Grabs</string>
+	<string name="competitions_available">Up For Grabs</string>
+	<string name="competitions_participating">Current</string>
     <string name="prizes">Prizes</string>
     <string name="validity">Valid from %s to %s</string>
     <string name="congratulations_you_won">Congratulations!</string>

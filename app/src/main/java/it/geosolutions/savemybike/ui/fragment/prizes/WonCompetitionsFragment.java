@@ -34,7 +34,8 @@ import retrofit2.Response;
  * Frabment for user's won competitions list
  */
 
-public class WonCompetitionsFragment extends Fragment {
+public class WonCompetitionsFragment extends Fragment
+{
     public static final String TAG = "BADGES_LIST";
     @BindView(R.id.list) GridView listView;
     @BindView(R.id.content_layout) LinearLayout content;
@@ -72,7 +73,7 @@ public class WonCompetitionsFragment extends Fragment {
 
         showProgress(true);
 
-        portalServices.getMyPrizes().enqueue(new Callback<PaginatedResult<Competition>>() {
+        portalServices.getMyCompetitionsWon().enqueue(new Callback<PaginatedResult<Competition>>() {
             @Override
             public void onResponse(Call<PaginatedResult<Competition>> call, Response<PaginatedResult<Competition>> response) {
                 showProgress(false);

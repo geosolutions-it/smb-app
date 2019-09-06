@@ -59,10 +59,11 @@ public class CompetitionPrizeAdapter extends ArrayAdapter<CompetitionPrize> {
             view.setTag(holder);
         }
         CompetitionPrize cPrize = getItem(position);
-        Prize prize = cPrize.getPrize();
+        Prize prize = cPrize.prize;
         // setup view
 
-        if(prize != null) {
+        if(prize != null)
+        {
             holder.header.setText(prize.getName());
             holder.description.setText(getDescription(cPrize));
             Sponsor s = prize.getSponsor();
@@ -80,11 +81,10 @@ public class CompetitionPrizeAdapter extends ArrayAdapter<CompetitionPrize> {
         return view;
     }
 
-    protected String getDescription(CompetitionPrize cPrize) {
-        Prize p = cPrize.getPrize();
-        if(p != null) {
-            return p.getDescription();
-        }
+    protected String getDescription(CompetitionPrize cPrize)
+    {
+        if(cPrize.prize != null)
+        	return cPrize.prize.getDescription();
         return null;
     }
 

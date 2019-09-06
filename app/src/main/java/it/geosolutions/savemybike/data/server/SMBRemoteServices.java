@@ -9,6 +9,9 @@ import it.geosolutions.savemybike.model.PaginatedResult;
 import it.geosolutions.savemybike.model.Track;
 import it.geosolutions.savemybike.model.TrackItem;
 import it.geosolutions.savemybike.model.competition.Competition;
+import it.geosolutions.savemybike.model.competition.CompetitionBaseData;
+import it.geosolutions.savemybike.model.competition.CompetitionParticipantRequest;
+import it.geosolutions.savemybike.model.competition.CompetitionParticipationInfo;
 import it.geosolutions.savemybike.model.user.Device;
 import it.geosolutions.savemybike.model.user.User;
 import it.geosolutions.savemybike.model.user.UserInfo;
@@ -67,11 +70,24 @@ public interface SMBRemoteServices {
     @PATCH("api/my-user")
     Call<ResponseBody> updateUser(@Body User user);
 
-    @GET("api/my-competitions-current")
-    Call<PaginatedResult<Competition>> getMyCompetitions();
+	// Competitions
 
-    @GET("api/my-competitions-won/")
-    Call<PaginatedResult<Competition>> getMyPrizes();
+	@GET("api/my-competitions-available")
+	Call<PaginatedResult<CompetitionBaseData>> getMyCompetitionsAvailable();
+
+	@GET("api/my-competitions-current")
+	Call<PaginatedResult<CompetitionParticipationInfo>> getMyCompetitionsCurrent();
+
+	@POST("api/my-competitions-current")
+	Call<ResponseBody> requestCompetitionParticipation(@Body CompetitionParticipantRequest cmp);
+
+	@DELETE("api/my-competitions-current/{id}")
+	Call<ResponseBody> cancelCompetitionParticipation(@Path("id") long id);
+
+	@GET("api/my-competitions-won")
+	Call<PaginatedResult<Competition>> getMyCompetitionsWon();
+
+	// Devices
 
     @PUT("api/my-devices/{token}/")
     Call<ResponseBody> updateDevice(@Path("token") String token, @Body Device device);
