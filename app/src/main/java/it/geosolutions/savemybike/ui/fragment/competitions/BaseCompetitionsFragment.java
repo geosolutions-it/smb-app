@@ -1,4 +1,4 @@
-package it.geosolutions.savemybike.ui.fragment.prizes;
+package it.geosolutions.savemybike.ui.fragment.competitions;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -24,8 +24,6 @@ public abstract class BaseCompetitionsFragment<ResultClass> extends android.supp
 	GridView listView;
 	@BindView(R.id.content_layout)
 	LinearLayout content;
-	@BindView(R.id.list_header)
-	TextView header;
 	@BindView(R.id.progress_layout) LinearLayout progress;
 	@BindView(R.id.swiperefresh)
 	SwipeRefreshLayout mySwipeRefreshLayout;
@@ -36,7 +34,6 @@ public abstract class BaseCompetitionsFragment<ResultClass> extends android.supp
 	BaseCompetitionAdapter<ResultClass> adapter;
 
 
-	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState)
 	{
@@ -47,9 +44,6 @@ public abstract class BaseCompetitionsFragment<ResultClass> extends android.supp
 		SaveMyBikeActivity activity = ((SaveMyBikeActivity)getActivity());
 		showEmpty(false, false);
 
-		// setup adapter
-		header.setText(R.string.up_to_grab);
-
 		adapter = createAdapter();
 
 		listView.setAdapter(adapter);
@@ -59,10 +53,11 @@ public abstract class BaseCompetitionsFragment<ResultClass> extends android.supp
 	}
 
 	protected abstract BaseCompetitionAdapter<ResultClass> createAdapter();
-	protected abstract int getHeaderTextResourceId();
+
 	protected abstract int getEmptyTextResourceId();
 	protected abstract int getEmptyDescriptionResourceId();
-	protected abstract void fetchItems();
+
+	public abstract void fetchItems();
 
 	/**
 	 * Switches the UI of this screen to show either the progress UI or the content
@@ -109,8 +104,8 @@ public abstract class BaseCompetitionsFragment<ResultClass> extends android.supp
 		{
 			boolean showEmpty = show && !noNetwork || show && n == null;
 			e.setVisibility(showEmpty ? View.VISIBLE : View.GONE);
-			((TextView) e.findViewById(R.id.empty_text)).setText(R.string.no_competition_currently_active_title);
-			((TextView) e.findViewById(R.id.empty_description)).setText(R.string.no_competition_currently_active_description);
+			((TextView) e.findViewById(R.id.empty_text)).setText(getEmptyTextResourceId());
+			((TextView) e.findViewById(R.id.empty_description)).setText(getEmptyDescriptionResourceId());
 		}
 		if(n != null)
 			n.setVisibility(show && noNetwork ? View.VISIBLE : View.GONE);

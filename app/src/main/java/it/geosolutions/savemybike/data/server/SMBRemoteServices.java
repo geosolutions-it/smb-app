@@ -78,14 +78,14 @@ public interface SMBRemoteServices {
 	@GET("api/my-competitions-current")
 	Call<PaginatedResult<CompetitionParticipationInfo>> getMyCompetitionsCurrent();
 
-	@POST("api/my-competitions-current")
+	@POST("api/my-competitions-current/")
 	Call<ResponseBody> requestCompetitionParticipation(@Body CompetitionParticipantRequest cmp);
 
-	@DELETE("api/my-competitions-current/{id}")
+	@DELETE("api/my-competitions-current/{id}/")
 	Call<ResponseBody> cancelCompetitionParticipation(@Path("id") long id);
 
 	@GET("api/my-competitions-won")
-	Call<PaginatedResult<Competition>> getMyCompetitionsWon();
+	Call<PaginatedResult<CompetitionParticipationInfo>> getMyCompetitionsWon();
 
 	// Devices
 

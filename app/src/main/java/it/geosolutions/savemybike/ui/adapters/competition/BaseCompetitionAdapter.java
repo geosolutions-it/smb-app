@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import it.geosolutions.savemybike.R;
 import it.geosolutions.savemybike.model.competition.Competition;
 import it.geosolutions.savemybike.model.competition.CompetitionBaseData;
+import it.geosolutions.savemybike.model.competition.CompetitionParticipationInfo;
 import it.geosolutions.savemybike.model.competition.CompetitionPrize;
 
 /**
@@ -32,7 +33,6 @@ public abstract class BaseCompetitionAdapter<ResultClass> extends ArrayAdapter<R
 
     static class ViewHolder
     {
-        @BindView(R.id.header) View header;
         @BindView(R.id.item_competition) View view;
         @BindView(R.id.title) TextView title;
         @BindView(R.id.description) TextView description;
@@ -57,6 +57,10 @@ public abstract class BaseCompetitionAdapter<ResultClass> extends ArrayAdapter<R
     public abstract CompetitionBaseData getCompetitionData(ResultClass rc);
     public abstract List<CompetitionPrize> getPrizes(ResultClass rc);
 
+	public void onCompetitionSelected(ResultClass bd)
+	{
+	}
+
                                                            @NonNull
                                                            @Override
     public View getView(int position, @Nullable View view, @NonNull ViewGroup parent)
@@ -68,7 +72,7 @@ public abstract class BaseCompetitionAdapter<ResultClass> extends ArrayAdapter<R
 
 		ResultClass rc = getItem(position);
 
-		CompetitionBaseData competition = (rc != null) ? getCompetitionData(rc) : null;
+		final CompetitionBaseData competition = (rc != null) ? getCompetitionData(rc) : null;
 
         ViewHolder holder;
 
@@ -84,11 +88,34 @@ public abstract class BaseCompetitionAdapter<ResultClass> extends ArrayAdapter<R
 
         // setup view
 
-        if(competition != null)
+	    final BaseCompetitionAdapter<ResultClass> that = this;
+
+	    view.setOnClickListener(new View.OnClickListener()
+	    {
+		    @Override
+		    public void onClick(View view)
+		    {
+		    	if(rc != null)
+				    that.onCompetitionSelected(rc);
+		    }
+	    });
+
+	    if(competition != null)
         {
-            // TODO (?)
             holder.title.setText(competition.name);
             holder.description.setText(competition.description);
+
+            if(rc instanceof CompetitionParticipationInfo)
+            {
+            	CompetitionParticipationInfo pi = (CompetitionParticipationInfo)rc;
+
+	            if(pi.registrationStatus.contains("pending"))
+		            holder.icon.setImageResource(R.drawable.ic_competition_waiting);
+	            else
+		            holder.icon.setImageResource(R.drawable.ic_competition_participating);
+	        } else {
+				holder.icon.setImageResource(R.drawable.ic_competition);
+	        }
         }
 
         List<CompetitionPrize> lPrizes = (rc != null) ? getPrizes(rc) : null;

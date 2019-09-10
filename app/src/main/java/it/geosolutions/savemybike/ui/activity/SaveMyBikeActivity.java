@@ -1,12 +1,10 @@
 package it.geosolutions.savemybike.ui.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -81,7 +79,7 @@ import it.geosolutions.savemybike.ui.fragment.ActivitiesFragment;
 import it.geosolutions.savemybike.ui.fragment.BikeListFragment;
 import it.geosolutions.savemybike.ui.fragment.HomeFragment;
 import it.geosolutions.savemybike.ui.fragment.UserFragment;
-import it.geosolutions.savemybike.ui.fragment.prizes.PrizesFragment;
+import it.geosolutions.savemybike.ui.fragment.competitions.CompetitionsFragment;
 import it.geosolutions.savemybike.ui.tasks.CleanUploadedSessionsTask;
 import it.geosolutions.savemybike.ui.tasks.GetRemoteConfigTask;
 import it.geosolutions.savemybike.ui.utils.PowerManager;
@@ -144,9 +142,19 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 
     private ExecutorService mExecutor;
 
+    private static SaveMyBikeActivity m_oInstance = null;
+
+    public static SaveMyBikeActivity instance()
+    {
+    	return m_oInstance;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        m_oInstance = this;
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //inflate
         setContentView(R.layout.drawer_layout);
@@ -213,7 +221,7 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
         if(page != null) {
             switch (page) {
                 case EXTRA_BADGES: return R.id.navigation_badges;
-                case EXTRA_PRIZES: return R.id.navigation_prizes;
+                case EXTRA_PRIZES: return R.id.navigation_competitions;
                 case EXTRA_MY_PRIZES: return R.id.navigation_my_prizes;
                 case EXTRA_RECORD: return R.id.navigation_record;
                 case EXTRA_TRACKS: return R.id.tracks_list;
@@ -610,7 +618,7 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
      *
      * @param position menu index
      */
-    @WorkerThread
+    //@WorkerThread
     public void changeFragment(int position) {
 
         Fragment currentFragment = getCurrentFragment();
@@ -686,22 +694,22 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                 fragment = f;
                 break;
             }
-            case R.id.navigation_prizes: {
-                if(currentFragment != null && currentFragment instanceof PrizesFragment) {
-                    ((PrizesFragment) currentFragment).setNavigation(R.id.navigation_prizes);
+            case R.id.navigation_competitions: {
+                if(currentFragment != null && currentFragment instanceof CompetitionsFragment) {
+                    ((CompetitionsFragment) currentFragment).setNavigation(R.id.navigation_competitions);
                     return;
                 }
-                PrizesFragment f = new PrizesFragment();
-                f.setInitialItem(R.id.navigation_prizes);
+                CompetitionsFragment f = new CompetitionsFragment();
+                f.setInitialItem(R.id.navigation_competitions);
                 fragment = f;
                 break;
             }
             case R.id.navigation_my_prizes: {
-                if(currentFragment != null && currentFragment instanceof PrizesFragment) {
-                    ((PrizesFragment) currentFragment).setNavigation(R.id.navigation_my_prizes);
+                if(currentFragment != null && currentFragment instanceof CompetitionsFragment) {
+                    ((CompetitionsFragment) currentFragment).setNavigation(R.id.navigation_my_prizes);
                     return;
                 }
-                PrizesFragment f = new PrizesFragment();
+                CompetitionsFragment f = new CompetitionsFragment();
                 f.setInitialItem(R.id.navigation_my_prizes);
                 fragment = f;
                 break;
@@ -733,6 +741,17 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame, fragment).commit();
         }
     }
+
+    public void pushFragment(Fragment f)
+    {
+    	getSupportFragmentManager().beginTransaction().add(R.id.main_content_frame,f).addToBackStack(null).commit();
+    }
+
+    public void popFragment()
+    {
+    	getSupportFragmentManager().popBackStackImmediate();
+    }
+
     /**
      * changes the current vehicle in the configuration and updates the UI if the record fragment is currently visible
      *
@@ -1095,7 +1114,10 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
                 new Handler().postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
             // default back effect is a back to the home page
             } else {
-                changeFragment(R.id.navigation_home);
+            	if(getSupportFragmentManager().getFragments().size() > 1)
+            		popFragment();
+            	else
+	                changeFragment(R.id.navigation_home);
             }
 
 

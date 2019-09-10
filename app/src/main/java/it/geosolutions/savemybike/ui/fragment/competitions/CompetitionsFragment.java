@@ -1,4 +1,4 @@
-package it.geosolutions.savemybike.ui.fragment.prizes;
+package it.geosolutions.savemybike.ui.fragment.competitions;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,7 +20,7 @@ import it.geosolutions.savemybike.ui.adapters.ViewPagerAdapter;
  *
  */
 
-public class PrizesFragment extends Fragment
+public class CompetitionsFragment extends Fragment
 {
     private int initialItem = R.id.navigation_competitions_available;
 
@@ -73,7 +73,7 @@ public class PrizesFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.prizes_fragment, container,false);
+        View view = inflater.inflate(R.layout.fragment_competitions, container,false);
         ButterKnife.bind(this, view);
         setupViewPager(view);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

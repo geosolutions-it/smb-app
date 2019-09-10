@@ -244,7 +244,7 @@ public class RetrofitClient {
         @Override public Response intercept(@NonNull Chain chain) throws IOException {
             Request request = chain.request();
             long t1 = System.nanoTime();
-            String requestLog = String.format(Locale.US, "Sending request %s on %s%n%s",request.url(), chain.connection(), request.headers());
+            String requestLog = String.format(Locale.US, "Sending %s to %s",request.method(),request.url());
 
             if(request.method().compareToIgnoreCase("post")==0){
                 requestLog ="\n"+requestLog+"\n"+bodyToString(request);

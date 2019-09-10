@@ -1,29 +1,18 @@
-package it.geosolutions.savemybike.ui.fragment.prizes;
+package it.geosolutions.savemybike.ui.fragment.competitions;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import it.geosolutions.savemybike.R;
 import it.geosolutions.savemybike.data.server.RetrofitClient;
 import it.geosolutions.savemybike.data.server.SMBRemoteServices;
 import it.geosolutions.savemybike.model.PaginatedResult;
-import it.geosolutions.savemybike.model.competition.Competition;
 import it.geosolutions.savemybike.model.competition.CompetitionParticipationInfo;
-import it.geosolutions.savemybike.ui.activity.SaveMyBikeActivity;
 import it.geosolutions.savemybike.ui.adapters.competition.BaseCompetitionAdapter;
 import it.geosolutions.savemybike.ui.adapters.competition.CurrentCompetitionAdapter;
 import retrofit2.Call;
@@ -37,6 +26,27 @@ import retrofit2.Response;
 
 public class CurrentCompetitionsFragment extends BaseCompetitionsFragment<CompetitionParticipationInfo>
 {
+	private static CurrentCompetitionsFragment m_oLastInstance = null;
+
+	public static CurrentCompetitionsFragment lastInstance()
+	{
+		return m_oLastInstance;
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState)
+	{
+		m_oLastInstance = this;
+		return super.onCreateView(inflater,container,savedInstanceState);
+	}
+
+	@Override
+	public void onDestroyView()
+	{
+		m_oLastInstance = null;
+		super.onDestroyView();
+	}
+
 	@Override
 	protected int getEmptyTextResourceId()
 	{
@@ -54,13 +64,9 @@ public class CurrentCompetitionsFragment extends BaseCompetitionsFragment<Compet
 		return new CurrentCompetitionAdapter(getActivity(),R.layout.item_competition,new ArrayList<CompetitionParticipationInfo>());
 	}
 
-	protected int getHeaderTextResourceId()
-	{
-		return R.string.up_to_grab;
-	}
 
 	@Override
-	protected void fetchItems()
+	public void fetchItems()
 	{
         RetrofitClient client = RetrofitClient.getInstance(this.getContext());
         SMBRemoteServices portalServices = client.getPortalServices();

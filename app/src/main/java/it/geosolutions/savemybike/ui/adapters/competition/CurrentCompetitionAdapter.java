@@ -35,7 +35,6 @@ public class CurrentCompetitionAdapter extends ParticipatedCompetitionAdapter
         ViewHolder holder = (ViewHolder) view.getTag();
 
         holder.subtitle.setVisibility(View.VISIBLE);
-        holder.header.setVisibility(View.GONE);
 
         CompetitionParticipationInfo participation = getItem(position);
         Competition competition = (participation != null) ? participation.competition : null;
