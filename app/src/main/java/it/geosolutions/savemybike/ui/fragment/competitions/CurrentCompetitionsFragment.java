@@ -73,35 +73,38 @@ public class CurrentCompetitionsFragment extends BaseCompetitionsFragment<Compet
 
         showProgress(true);
 
-        portalServices.getMyCompetitionsCurrent().enqueue(new Callback<PaginatedResult<CompetitionParticipationInfo>>()
-        {
-            @Override
-            public void onResponse(Call<PaginatedResult<CompetitionParticipationInfo>> call, Response<PaginatedResult<CompetitionParticipationInfo>> response)
-            {
-                showProgress(false);
-                PaginatedResult<CompetitionParticipationInfo> result = response.body();
-                if(result != null && result.getResults() != null)
-                {
-                    adapter.clear();
-                    adapter.addAll(response.body().getResults());
-                    showEmpty(response.body().getResults().size() == 0, false);
-                } else {
-                    adapter.clear();
-                    adapter.addAll(new ArrayList<>());
-                    showEmpty(true, false);
-                }
-                adapter.notifyDataSetChanged();
-            }
+        client.performAuthenticatedCall(
+				portalServices.getMyCompetitionsCurrent(),
+        		new Callback<PaginatedResult<CompetitionParticipationInfo>>()
+				{
+					@Override
+					public void onResponse(Call<PaginatedResult<CompetitionParticipationInfo>> call, Response<PaginatedResult<CompetitionParticipationInfo>> response)
+					{
+						showProgress(false);
+						PaginatedResult<CompetitionParticipationInfo> result = response.body();
+						if(result != null && result.getResults() != null)
+						{
+							adapter.clear();
+							adapter.addAll(response.body().getResults());
+							showEmpty(response.body().getResults().size() == 0, false);
+						} else {
+							adapter.clear();
+							adapter.addAll(new ArrayList<>());
+							showEmpty(true, false);
+						}
+						adapter.notifyDataSetChanged();
+					}
 
-            @Override
-            public void onFailure(Call<PaginatedResult<CompetitionParticipationInfo>> call, Throwable t)
-            {
-                showProgress(false);
-                showEmpty(true, true);
-                adapter.clear();
-                adapter.notifyDataSetChanged();
-            }
-        });
+					@Override
+					public void onFailure(Call<PaginatedResult<CompetitionParticipationInfo>> call, Throwable t)
+					{
+						showProgress(false);
+						showEmpty(true, true);
+						adapter.clear();
+						adapter.notifyDataSetChanged();
+					}
+				}
+			);
     }
 
 

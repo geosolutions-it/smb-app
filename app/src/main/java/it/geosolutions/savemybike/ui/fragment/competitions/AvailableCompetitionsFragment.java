@@ -69,35 +69,38 @@ public class AvailableCompetitionsFragment extends BaseCompetitionsFragment<Comp
 
 		showProgress(true);
 
-		portalServices.getMyCompetitionsAvailable().enqueue(new Callback<PaginatedResult<CompetitionBaseData>>()
-		{
-			@Override
-			public void onResponse(Call<PaginatedResult<CompetitionBaseData>> call, Response<PaginatedResult<CompetitionBaseData>> response)
-			{
-				showProgress(false);
-				PaginatedResult<CompetitionBaseData> result = response.body();
-				if(result != null && result.getResults() != null)
+		client.performAuthenticatedCall(
+				portalServices.getMyCompetitionsAvailable(),
+				new Callback<PaginatedResult<CompetitionBaseData>>()
 				{
-					adapter.clear();
-					adapter.addAll(response.body().getResults());
-					showEmpty(response.body().getResults().size() == 0, false);
-				} else {
-					adapter.clear();
-					adapter.addAll(new ArrayList<>());
-					showEmpty(true, false);
-				}
-				adapter.notifyDataSetChanged();
-			}
+					@Override
+					public void onResponse(Call<PaginatedResult<CompetitionBaseData>> call, Response<PaginatedResult<CompetitionBaseData>> response)
+					{
+						showProgress(false);
+						PaginatedResult<CompetitionBaseData> result = response.body();
+						if(result != null && result.getResults() != null)
+						{
+							adapter.clear();
+							adapter.addAll(response.body().getResults());
+							showEmpty(response.body().getResults().size() == 0, false);
+						} else {
+							adapter.clear();
+							adapter.addAll(new ArrayList<>());
+							showEmpty(true, false);
+						}
+						adapter.notifyDataSetChanged();
+					}
 
-			@Override
-			public void onFailure(Call<PaginatedResult<CompetitionBaseData>> call, Throwable t)
-			{
-				showProgress(false);
-				showEmpty(true, true);
-				adapter.clear();
-				adapter.notifyDataSetChanged();
-			}
-		});
+					@Override
+					public void onFailure(Call<PaginatedResult<CompetitionBaseData>> call, Throwable t)
+					{
+						showProgress(false);
+						showEmpty(true, true);
+						adapter.clear();
+						adapter.notifyDataSetChanged();
+					}
+				}
+			);
 	}
 
 }

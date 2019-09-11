@@ -92,52 +92,53 @@ public class CompetitionFragment extends Fragment implements View.OnClickListene
 		CompetitionParticipantRequest rq = new CompetitionParticipantRequest();
 		rq.competitionId = m_oCompetition.id;
 
-		Call<ResponseBody> call = portalServices.requestCompetitionParticipation(rq);
-
 		final Context ctx = getContext();
 
 		markBusy(true);
 
-		call.enqueue(new Callback<ResponseBody>()
-		{
-			@Override
-			public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
-			{
-				markBusy(false);
-
-				AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
-
-				dlg.setTitle(R.string.request_succeeded);
-				dlg.setMessage(R.string.participation_requested);
-				dlg.setPositiveButton("OK", new DialogInterface.OnClickListener()
+		client.performAuthenticatedCall(
+				portalServices.requestCompetitionParticipation(rq),
+				new Callback<ResponseBody>()
 				{
 					@Override
-					public void onClick(DialogInterface dialogInterface, int i)
+					public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
 					{
-						dialogInterface.dismiss();
+						markBusy(false);
+
+						AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
+
+						dlg.setTitle(R.string.request_succeeded);
+						dlg.setMessage(R.string.participation_requested);
+						dlg.setPositiveButton("OK", new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialogInterface, int i)
+							{
+								dialogInterface.dismiss();
+							}
+						});
+						dlg.create().show();
+
+						if(AvailableCompetitionsFragment.lastInstance() != null)
+							AvailableCompetitionsFragment.lastInstance().fetchItems();
+						if(CurrentCompetitionsFragment.lastInstance() != null)
+							CurrentCompetitionsFragment.lastInstance().fetchItems();
+
+						SaveMyBikeActivity.instance().popFragment();
 					}
-				});
-				dlg.create().show();
 
-				if(AvailableCompetitionsFragment.lastInstance() != null)
-					AvailableCompetitionsFragment.lastInstance().fetchItems();
-				if(CurrentCompetitionsFragment.lastInstance() != null)
-					CurrentCompetitionsFragment.lastInstance().fetchItems();
+					@Override
+					public void onFailure(Call<ResponseBody> call, Throwable t)
+					{
+						markBusy(false);
+						AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
 
-				SaveMyBikeActivity.instance().popFragment();
-			}
-
-			@Override
-			public void onFailure(Call<ResponseBody> call, Throwable t)
-			{
-				markBusy(false);
-				AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
-
-				dlg.setTitle(R.string.request_failed);
-				dlg.setMessage(t.getLocalizedMessage());
-				dlg.create().show();
-			}
-		});
+						dlg.setTitle(R.string.request_failed);
+						dlg.setMessage(t.getLocalizedMessage());
+						dlg.create().show();
+					}
+				}
+			);
 	}
 
 	private void cancelParticipation()
@@ -145,48 +146,49 @@ public class CompetitionFragment extends Fragment implements View.OnClickListene
 		RetrofitClient client = RetrofitClient.getInstance(this.getContext());
 		SMBRemoteServices portalServices = client.getPortalServices();
 
-		Call<ResponseBody> call = portalServices.cancelCompetitionParticipation(m_oParticipationInfo.id);
-
 		final Context ctx = getContext();
 
 		markBusy(true);
 
-		call.enqueue(new Callback<ResponseBody>()
-		{
-			@Override
-			public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
-			{
-				markBusy(false);
-
-				AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
-
-				dlg.setTitle(R.string.request_succeeded);
-				dlg.setMessage(R.string.participation_canceled);
-				dlg.setPositiveButton("OK", new DialogInterface.OnClickListener()
+		client.performAuthenticatedCall(
+				portalServices.cancelCompetitionParticipation(m_oParticipationInfo.id),
+				new Callback<ResponseBody>()
 				{
 					@Override
-					public void onClick(DialogInterface dialogInterface, int i)
+					public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response)
 					{
-						dialogInterface.dismiss();
+						markBusy(false);
+
+						AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
+
+						dlg.setTitle(R.string.request_succeeded);
+						dlg.setMessage(R.string.participation_canceled);
+						dlg.setPositiveButton("OK", new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialogInterface, int i)
+							{
+								dialogInterface.dismiss();
+							}
+						});
+						dlg.create().show();
+
+						SaveMyBikeActivity.instance().popFragment();
 					}
-				});
-				dlg.create().show();
 
-				SaveMyBikeActivity.instance().popFragment();
-			}
+					@Override
+					public void onFailure(Call<ResponseBody> call, Throwable t)
+					{
+						markBusy(false);
 
-			@Override
-			public void onFailure(Call<ResponseBody> call, Throwable t)
-			{
-				markBusy(false);
+						AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
 
-				AlertDialog.Builder dlg = new AlertDialog.Builder(ctx);
-
-				dlg.setTitle(R.string.request_failed);
-				dlg.setMessage(t.getLocalizedMessage());
-				dlg.create().show();
-			}
-		});
+						dlg.setTitle(R.string.request_failed);
+						dlg.setMessage(t.getLocalizedMessage());
+						dlg.create().show();
+					}
+				}
+			);
 	}
 
 	public void cancelParticipationAfterConfirmation()

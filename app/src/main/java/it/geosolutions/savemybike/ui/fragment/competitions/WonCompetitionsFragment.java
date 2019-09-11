@@ -83,35 +83,38 @@ public class WonCompetitionsFragment extends BaseCompetitionsFragment<Competitio
 
 		showProgress(true);
 
-		portalServices.getMyCompetitionsWon().enqueue(new Callback<PaginatedResult<CompetitionParticipationInfo>>()
-		{
-			@Override
-			public void onResponse(Call<PaginatedResult<CompetitionParticipationInfo>> call, Response<PaginatedResult<CompetitionParticipationInfo>> response)
-			{
-				showProgress(false);
-				PaginatedResult<CompetitionParticipationInfo> result = response.body();
-				if(result != null && result.getResults() != null)
+		client.performAuthenticatedCall(
+				portalServices.getMyCompetitionsWon(),
+				new Callback<PaginatedResult<CompetitionParticipationInfo>>()
 				{
-					adapter.clear();
-					adapter.addAll(response.body().getResults());
-					showEmpty(response.body().getResults().size() == 0, false);
-				} else {
-					adapter.clear();
-					adapter.addAll(new ArrayList<>());
-					showEmpty(true, false);
-				}
-				adapter.notifyDataSetChanged();
-			}
+					@Override
+					public void onResponse(Call<PaginatedResult<CompetitionParticipationInfo>> call, Response<PaginatedResult<CompetitionParticipationInfo>> response)
+					{
+						showProgress(false);
+						PaginatedResult<CompetitionParticipationInfo> result = response.body();
+						if(result != null && result.getResults() != null)
+						{
+							adapter.clear();
+							adapter.addAll(response.body().getResults());
+							showEmpty(response.body().getResults().size() == 0, false);
+						} else {
+							adapter.clear();
+							adapter.addAll(new ArrayList<>());
+							showEmpty(true, false);
+						}
+						adapter.notifyDataSetChanged();
+					}
 
-			@Override
-			public void onFailure(Call<PaginatedResult<CompetitionParticipationInfo>> call, Throwable t)
-			{
-				showProgress(false);
-				showEmpty(true, true);
-				adapter.clear();
-				adapter.notifyDataSetChanged();
-			}
-		});
+					@Override
+					public void onFailure(Call<PaginatedResult<CompetitionParticipationInfo>> call, Throwable t)
+					{
+						showProgress(false);
+						showEmpty(true, true);
+						adapter.clear();
+						adapter.notifyDataSetChanged();
+					}
+				}
+			);
 	}
 
 }

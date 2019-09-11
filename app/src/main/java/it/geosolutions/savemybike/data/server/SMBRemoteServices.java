@@ -31,7 +31,8 @@ import retrofit2.http.Query;
  * Created by Lorenzo Pini on 23/03/2018.
  */
 
-public interface SMBRemoteServices {
+public interface SMBRemoteServices
+{
     @GET("config")
     Call<Configuration> getConfig();
 
