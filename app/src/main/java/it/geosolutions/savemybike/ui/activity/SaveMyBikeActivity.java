@@ -19,7 +19,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -53,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import it.geosolutions.savemybike.AuthStateManager;
+import it.geosolutions.savemybike.auth.AuthenticationManager;
 import it.geosolutions.savemybike.BuildConfig;
 import it.geosolutions.savemybike.GlideApp;
 import it.geosolutions.savemybike.R;
@@ -95,7 +94,8 @@ import retrofit2.Response;
  *
  * Main activity of the SaveMyBike app
  */
-public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInteractionListener {
+public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInteractionListener
+{
 
 	private final static String TAG = "SaveMyBikeActivity";
 	private FirebaseAnalytics mFirebaseAnalytics;
@@ -138,8 +138,6 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 
 	@BindView(R.id.nav_view) NavigationView navView ;
 
-	private AuthorizationService mAuthService;
-
 	private ExecutorService mExecutor;
 
 	private static SaveMyBikeActivity m_oInstance = null;
@@ -169,14 +167,6 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 			signOut(false);
 			return;
 		}
-
-		mAuthService = new AuthorizationService(
-				this,
-				new AppAuthConfiguration.Builder()
-						.setConnectionBuilder(config.getConnectionBuilder())
-						.build());
-
-
 
 		setSupportActionBar(smbToolbar);
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -208,7 +198,6 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 
 		}
 		PowerManager.startPowerSaverIntent(this);
-		setupTokenAutoRefresh();
 	}
 
 	/**
@@ -1071,7 +1060,7 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 		if(logout) {
 			logout();
 		} else  {
-			clearAuthState();
+			AuthenticationManager.instance().clearState();
 			backToLogin();
 		}
 
@@ -1080,13 +1069,9 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 
 
 	@Override
-	protected void onDestroy() {
+	protected void onDestroy()
+	{
 		super.onDestroy();
-
-		if (mAuthService != null) {
-			mAuthService.dispose();
-			mAuthService = null;
-		}
 
 		if(mExecutor != null) {
 			mExecutor.shutdownNow();
@@ -1167,65 +1152,5 @@ public class SaveMyBikeActivity extends SMBBaseActivity implements OnFragmentInt
 
 			}
 		}).execute();
-	}
-
-	// Autorefresh of token
-	boolean tokenRefreshTimerScheduled = false;
-
-	/**
-	 * If the activity stay up for a long time, the token may expire.
-	 * This method schedules a task that periodically check the refresh token to see if it
-	 * has to be refreshed.
-	 * TODO: a better solution is to schedule to a precise time the refresh, instead of checking it every X period (REFRESH_TOKEN_INTERVAL is the current interval)
-	 */
-	public void setupTokenAutoRefresh() {
-		Context context = this;
-		if(!tokenRefreshTimerScheduled) {
-			Timer timer = new Timer();
-			TimerTask t = new TimerTask() {
-				@Override
-				public void run() {
-					Log.i(TAG, "running token refresh");
-					AuthState state = AuthStateManager.getInstance(context).getCurrent();
-					Long expiresAt = state.getAccessTokenExpirationTime();
-					if (expiresAt == null) {
-						Log.w(TAG, "token refresh impossible. This access token has no expire");
-
-					} else if (expiresAt < System.currentTimeMillis() + Constants.TOKEN_REFRESH_BUFFER) {
-						Log.i(TAG, "running token refresh that is going to expire at " + new Date(expiresAt).toString());
-						AuthStateManager authStateManager = AuthStateManager.getInstance(context);
-						authStateManager.getCurrent().createTokenRefreshRequest();
-						it.geosolutions.savemybike.Configuration mConfiguration = it.geosolutions.savemybike.Configuration.getInstance(context);
-						AuthorizationService authService = new AuthorizationService(
-								context,
-								new AppAuthConfiguration.Builder()
-										.setConnectionBuilder(mConfiguration.getConnectionBuilder())
-										.build());
-						// TODO : refresh
-						try {
-							authService.performTokenRequest(
-									authStateManager.getCurrent().createTokenRefreshRequest(),
-									authStateManager.getCurrent().getClientAuthentication(),
-									(tokenResponse, authException) -> {
-										if(tokenResponse != null) {
-											Long newExpiringDate = tokenResponse.accessTokenExpirationTime;
-											Log.i(TAG, "running token successful. Next token will expire at " + new Date(newExpiringDate).toString());
-										} else {
-											Log.e(TAG, "Error when refreshing access token", authException);
-											// TODO: check if it is an authorization error.
-											// TODO: if network error, postpone the refresh
-										}
-										authStateManager.updateAfterTokenResponse(tokenResponse, authException);
-									}
-							);
-						} catch (Exception e) {
-							Log.e(TAG, "Error when refreshing access token", e);
-						}
-					}
-				}
-			};
-			timer.scheduleAtFixedRate(t, 0, Constants.REFRESH_TOKEN_INTERVAL);
-			tokenRefreshTimerScheduled = true;
-		}
 	}
 }

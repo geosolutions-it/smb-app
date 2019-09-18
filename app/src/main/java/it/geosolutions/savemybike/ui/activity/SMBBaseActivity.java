@@ -20,7 +20,8 @@ import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.AuthorizationServiceDiscovery;
 
-import it.geosolutions.savemybike.AuthStateManager;
+import it.geosolutions.savemybike.auth.AuthHandlerActivity;
+import it.geosolutions.savemybike.auth.AuthenticationManager;
 import it.geosolutions.savemybike.R;
 import it.geosolutions.savemybike.data.Constants;
 import it.geosolutions.savemybike.data.server.AuthClient;
@@ -32,7 +33,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public abstract class SMBBaseActivity extends AppCompatActivity {
+public abstract class SMBBaseActivity extends AuthHandlerActivity
+{
 	public static final String TAG = "SMBBASEACTIVITY";
 	protected static final byte PERMISSION_REQUEST = 122;
 	public enum PermissionIntent {
@@ -115,23 +117,17 @@ public abstract class SMBBaseActivity extends AppCompatActivity {
 	/* ************ LOGIN - LOGOUT UTILITIES ******************************/
 	// TODO: externailze Login/Logout utilities
 
-	public void clearAuthState() {
-		AuthStateManager mStateManager = AuthStateManager.getInstance(this);
-		AuthState currentState = mStateManager.getCurrent();
-		AuthState clearedState =
-				new AuthState(currentState.getAuthorizationServiceConfiguration());
-
-		if (currentState.getLastRegistrationResponse() != null) {
-			clearedState.update(currentState.getLastRegistrationResponse());
-		}
-		mStateManager.replace(clearedState);
-	}
-
 	public void backToLogin() {
 		Intent mainIntent = new Intent(this, LoginActivity.class);
 		mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(mainIntent);
 		finish();
+	}
+
+	@Override
+	protected void onAuthenticationFailed(String sError)
+	{
+		backToLogin();
 	}
 
 	/**
@@ -140,7 +136,8 @@ public abstract class SMBBaseActivity extends AppCompatActivity {
 	 *  - Invalidate session (so, on the next login attempt the cached browser session is not valid anymore)
 	 *  - Redirect to login activity.
 	 */
-	public void logout() {
+	public void logout()
+	{
 		RetrofitClient c = RetrofitClient.getInstance(this);
 		String token = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FIREBASE_INSTANCE_ID, null);
 		String lastStoredToken = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.FIREBASE_LAST_SAVED_ID, null);
@@ -167,6 +164,9 @@ public abstract class SMBBaseActivity extends AppCompatActivity {
 							} else {
 								Toast.makeText(getBaseContext(), R.string.logout_generic_issue, Toast.LENGTH_LONG);
 							}
+							// crap anyway
+							invalidateSession();
+							backToLogin();
 						}
 					}
 				);
@@ -183,8 +183,7 @@ public abstract class SMBBaseActivity extends AppCompatActivity {
 	}
 	public void invalidateSession()
 	{
-		AuthStateManager mStateManager = AuthStateManager.getInstance(this);
-		AuthState mAuthState = mStateManager.getCurrent();
+		AuthState mAuthState = AuthenticationManager.instance().currentAuthState();
 		String accessToken = mAuthState.getAccessToken();
 		RetrofitClient client = RetrofitClient.getInstance(getBaseContext());
 		AuthClient authClient = client.getAuthClient();
@@ -204,7 +203,7 @@ public abstract class SMBBaseActivity extends AppCompatActivity {
 					public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 						// reset saved user to re-ask for user info on next login (e.g. profile completed)
 						Configuration.saveUserProfile(getBaseContext(), null );
-						clearAuthState();
+						AuthenticationManager.instance().clearState();
 						backToLogin();
 					}
 

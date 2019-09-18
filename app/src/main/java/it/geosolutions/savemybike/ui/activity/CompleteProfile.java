@@ -2,30 +2,17 @@ package it.geosolutions.savemybike.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import net.openid.appauth.AuthState;
-import net.openid.appauth.AuthorizationServiceConfiguration;
-import net.openid.appauth.AuthorizationServiceDiscovery;
-
-import it.geosolutions.savemybike.AuthStateManager;
 import it.geosolutions.savemybike.R;
 import it.geosolutions.savemybike.data.Analytics;
-import it.geosolutions.savemybike.data.server.AuthClient;
 import it.geosolutions.savemybike.data.server.RetrofitClient;
 import it.geosolutions.savemybike.data.server.SMBRemoteServices;
 import it.geosolutions.savemybike.model.user.User;
-import it.geosolutions.savemybike.ui.utils.AuthUtils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,7 +21,6 @@ import retrofit2.Response;
 public class CompleteProfile extends SMBBaseActivity {
 	private static final String TAG = "COMPLETEPROFILE";
 	private FirebaseAnalytics mFirebaseAnalytics;
-	AuthStateManager mStateManager = AuthStateManager.getInstance(this);
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
